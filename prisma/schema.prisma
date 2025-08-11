@@ -1,0 +1,143 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+// schema.prisma
+
+
+model User {
+  id        Int      @id @default(autoincrement())
+  nom       String
+  prenom    String
+  email     String   @unique
+  pass      String
+  telephone String
+  adresse   String
+  role      Role
+
+  // Relations
+  specialite Specialite? @relation(fields: [specialiteId], references: [id])
+  specialiteId Int?      // Nullable: seulement pour les médecins
+
+  rvsMedecin   Rv[]      @relation("RvMedecin")
+  prescriptions Prescription[] @relation("PrescriptionMedecin")
+
+}
+
+model Specialite {
+  id      Int     @id @default(autoincrement())
+  libelle String
+
+  medecins User[]
+}
+
+model Patient {
+  id        Int       @id @default(autoincrement())
+  nom       String
+  prenom    String
+  adresse   String
+  telephone String
+  email     String
+
+  rvs           Rv[]
+  prescriptions Prescription[]
+  hospitalisations Hospitalisation[]
+}
+
+model Rv {
+  id         Int      @id @default(autoincrement())
+  date       DateTime
+  statut     String
+
+  patient   Patient @relation(fields: [patientId], references: [id])
+  patientId Int
+
+  medecin   User    @relation(name: "RvMedecin", fields: [medecinId], references: [id])
+  medecinId Int
+}
+
+model Prescription {
+  id          Int      @id @default(autoincrement())
+  date        DateTime
+  type        String
+  commentaire String
+
+  patient   Patient @relation(fields: [patientId], references: [id])
+  patientId Int
+
+  medecin   User   @relation("PrescriptionMedecin", fields: [medecinId], references: [id])
+  medecinId Int
+
+
+  facture   Facture?
+}
+
+model Facture {
+  id             Int       @id @default(autoincrement())
+  date           DateTime
+  montant        Float
+  statut         String
+
+ prescriptionId Int      @unique
+prescription   Prescription @relation(fields: [prescriptionId], references: [id])
+
+
+  payements      Payement[]
+}
+
+model Payement {
+  id         Int     @id @default(autoincrement())
+  montant_paye Float
+  date       DateTime
+
+  facture   Facture @relation(fields: [factureId], references: [id])
+  factureId Int
+}
+
+model Chambre {
+  id      Int     @id @default(autoincrement())
+  numero  String
+  statut  String
+
+  lits    Lit[]
+}
+
+model Lit {
+  id        Int     @id @default(autoincrement())
+  numero    String
+  statut    String
+
+  chambre   Chambre @relation(fields: [chambreId], references: [id])
+  chambreId Int
+
+  hospitalisations Hospitalisation[]
+}
+
+model Hospitalisation {
+  id          Int     @id @default(autoincrement())
+  date_entre  DateTime
+  dat_sortie  DateTime
+
+  patient   Patient @relation(fields: [patientId], references: [id])
+  patientId Int
+
+  lit       Lit     @relation(fields: [litsId], references: [id])
+  litsId    Int
+}
+
+enum Role {
+  admin
+  medecin
+  personnel
+}

@@ -5,7 +5,8 @@ import { cors } from 'hono/cors'
 
 import { authRoutes }    from './routes/auth.routes.js'
 import { specialiteRoutes } from './routes/specialite.routes.js'
-import { adminRoutes } from './routes/admin.routes.js'
+import { adminRoutes} from './routes/admin.routes.js'
+import { medecinRoutes } from './routes/medecin.routes.js'
 
 
 export const app = new Hono()
@@ -17,6 +18,7 @@ export const app = new Hono()
 app.route('/auth',     authRoutes)
 app.route('/specialite',     specialiteRoutes)
 app.route('/admin',     adminRoutes)
+app.route('/medecin',     medecinRoutes)
 
 
 /* --------- Endpoints simples --------- */

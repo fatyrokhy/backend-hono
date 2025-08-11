@@ -24,11 +24,11 @@ model User {
   pass      String
   telephone String
   adresse   String
+  specialiteId Int?
   role      Role
 
   // Relations
   specialite Specialite? @relation(fields: [specialiteId], references: [id])
-  specialiteId Int?      // Nullable: seulement pour les médecins
 
   rvsMedecin   Rv[]      @relation("RvMedecin")
   prescriptions Prescription[] @relation("PrescriptionMedecin")

@@ -2,27 +2,6 @@ import bcrypt from 'bcrypt'
 import { prisma } from '../config/db.js'
 import { createUserSchema, updateUserSchema, userArraySchema } from '../schemas/admin.schema.js'
 
-// inscription admin 
-// export const createUser = async (c) => {
-//     try {
-
-//         const body = await c.req.json()
-//         const { prenom, nom, adresse, email, pass,telephone,role,specialiteId} = createUserSchema.parse(body)
-      
-//         const hashed = await bcrypt.hash(pass, 10)
-      
-//         const user = await prisma.user.create({
-//           data: { prenom, nom, adresse, email, pass: hashed,telephone,role,specialiteId },
-//         })
-      
-//         return c.json({ id: user.id, email: user.email })
-
-//     } catch (error) {
-//         console.error('Erreur création user:', err) // ← important
-//         return c.json({ message: 'Erreur serveur', error: err.message }, 500)
-//     }
-// }
-
 // liste users
 export const getAllUsers = async (c) => {
   try {
@@ -38,6 +17,7 @@ export const getAllUsers = async (c) => {
   }
 };
 
+// création de user
 export const createUser = async (c) => {
   try {
     const body = await c.req.json();
@@ -112,7 +92,7 @@ export const getAllPersonnels = async (c) => {
   }
 };
 
-
+// Récupération d'un utilisateur par id
 export const getUserById = async (c) => {
   try {
     const id = parseInt(c.req.param('id'));
@@ -132,57 +112,160 @@ export const getUserById = async (c) => {
     return c.json({ message: 'Erreur lors de la récupération de l’utilisateur' }, 500);
   }
 };
-
-export const updateUsers = async (c) => {
+// Récupération d'un utilisateur par tel
+export const getUserByTel = async (c) => {
   try {
-    const body = await c.req.json();
-    
-    // Validation avec Zod
-    const data = updateUserSchema.parse(body);
-        console.log(body);
-
-    const { id, ...updateData } = data;
-    console.log("ID:", id, "updateData:", updateData);
-    const updatedUser = await prisma.user.update({
-      where: { id },
-      data: updateData
+    const tel = c.req.param('telephone'); // récupère :telephone de l’URL
+    console.log(tel);
+    const user = await prisma.user.findMany({
+  where: {
+    telephone: {
+      startsWith: tel
+    }
+  }
     });
+    console.log(user);
+    if (!user) {
+      return c.json({ message: 'Utilisateur non trouvé' }, 404);
+    }
 
-    return c.json(updatedUser);
+    return c.json(user);
   } catch (error) {
-    if (error.code === 'P2025') return c.json({ message: 'Utilisateur non trouvé' }, 404);
-    if (error.name === 'ZodError') return c.json({ message: 'Validation échouée', errors: error.errors }, 400);
     console.error(error);
-    return c.json({ message: 'Erreur serveur' }, 500);
+    return c.json({ message: 'Erreur lors de la récupération de l’utilisateur' }, 500);
   }
 };
 
 export const updateUser = async (c) => {
   try {
-    const id = parseInt(c.req.param('id')); // Récupère l'ID depuis l'URL
+    const id = parseInt(c.req.param('id')); // <-- récupère l’ID de l’URL
+    if (!id) return c.json({ message: 'ID manquant' }, 400);
+
     const body = await c.req.json();
+    console.log(body);
 
-    // Validation Zod (sans l'ID dans le schéma car il vient de l'URL)
     const data = updateUserSchema.parse(body);
+    const { pass, ...rest } = data;
 
-    console.log("Mise à jour de l'utilisateur ID:", id, data);
+    const updateData = { ...rest };
 
-    const updatedUser = await prisma.user.update({
+    if (pass) {
+      updateData.pass = await bcrypt.hash(pass, 10);
+    }
+
+    const user = await prisma.user.update({
       where: { id },
-      data
+      data: updateData
     });
 
-    return c.json(updatedUser);
-  } catch (error) {
-    if (error.code === 'P2025') return c.json({ message: 'Utilisateur non trouvé' }, 404);
-    if (error.name === 'ZodError') return c.json({ 
-      message: 'Échec de la validation', 
-      errors: error.errors 
-    }, 400);
-    console.error(error);
-    return c.json({ message: 'Erreur serveur' }, 500);
+    return c.json(user);
+  } catch (err) {
+    console.error('Erreur modification user:', err);
+    return c.json({ message: 'Erreur serveur', error: err.message }, 500);
   }
 };
+
+// export const updateUser = async (c) => {
+//   try {
+//     const body = await c.req.json();
+//     console.log(body);
+
+//     // Validation
+//     const data = updateUserSchema.parse(body);
+//     const { id, pass, ...rest } = data;
+
+//     if (!id) return c.json({ message: 'ID manquant pour mise à jour' }, 400);
+
+//     // Préparer les données à mettre à jour
+//     const updateData = { ...rest };
+
+//     if (pass) {
+//       updateData.pass = await bcrypt.hash(pass, 10);
+//     }
+
+//     const user = await prisma.user.update({
+//       where: { id },
+//       data: updateData
+//     });
+
+//     return c.json(user);
+//   } catch (err) {
+//     console.error('Erreur modification user:', err);
+//     return c.json({ message: 'Erreur serveur', error: err.message }, 500);
+//   }
+// };
+
+// export const updateUser = async (c) => {
+//   try {
+//     const body = await c.req.json();
+//     console.log(body);
+//     const { prenom, nom, adresse, email, pass, telephone, role, specialiteId, image, isActive } =
+//       updateUserSchema.parse(body);
+
+//     const hashed = await bcrypt.hash(pass, 10);
+
+//     const user = await prisma.user.update({
+//       data: {prenom,nom,adresse,email,pass: hashed,telephone,role,specialiteId,image,isActive
+//       },
+//     });
+
+//     return c.json(user);
+//   } catch (err) {
+//     console.error('Erreur modification user:', err);
+//     return c.json({ message: 'Erreur serveur', error: err.message }, 500);
+//   }
+// };
+
+// export const updateUsers = async (c) => {
+//   try {
+//     const body = await c.req.json();
+    
+//     // Validation avec Zod
+//     const data = updateUserSchema.parse(body);
+//         console.log(body);
+
+//     const { id, ...updateData } = data;
+//     console.log("ID:", id, "updateData:", updateData);
+//     const updatedUser = await prisma.user.update({
+//       where: { id },
+//       data: updateData
+//     });
+
+//     return c.json(updatedUser);
+//   } catch (error) {
+//     if (error.code === 'P2025') return c.json({ message: 'Utilisateur non trouvé' }, 404);
+//     if (error.name === 'ZodError') return c.json({ message: 'Validation échouée', errors: error.errors }, 400);
+//     console.error(error);
+//     return c.json({ message: 'Erreur serveur' }, 500);
+//   }
+// };
+
+// export const updateUsere = async (c) => {
+//   try {
+//     const id = parseInt(c.req.param('id')); // Récupère l'ID depuis l'URL
+//     const body = await c.req.json();
+
+//     // Validation Zod (sans l'ID dans le schéma car il vient de l'URL)
+//     const data = updateUserSchema.parse(body);
+
+//     console.log("Mise à jour de l'utilisateur ID:", id, data);
+
+//     const updatedUser = await prisma.user.update({
+//       where: { id },
+//       data
+//     });
+
+//     return c.json(updatedUser);
+//   } catch (error) {
+//     if (error.code === 'P2025') return c.json({ message: 'Utilisateur non trouvé' }, 404);
+//     if (error.name === 'ZodError') return c.json({ 
+//       message: 'Échec de la validation', 
+//       errors: error.errors 
+//     }, 400);
+//     console.error(error);
+//     return c.json({ message: 'Erreur serveur' }, 500);
+//   }
+// };
 
 
 // export const updateUser = async (c) => {

@@ -27,12 +27,26 @@ export const userSchema = z.object({
 })
 export const userArraySchema = z.array(userSchema);
 
+// export const updateUserSchema = z.object({
+//   nom: z.string().min(2, "Le nom doit contenir au moins 2 caractères").optional(),
+//   prenom: z.string().min(2, "Le prénom doit contenir au moins 2 caractères").optional(),
+//   email: z.string().email("Email invalide").optional(),
+//   telephone: z.string().min(9, "Numéro invalide").optional(),
+//   adresse: z.string().optional(),
+//   specialiteId: z.number().nullable().optional(),
+//   image: z.string().optional(),
+//   isActive: z.boolean().optional()
+// });
+
 export const updateUserSchema = z.object({
-  nom: z.string().min(2, "Le nom doit contenir au moins 2 caractères").optional(),
-  prenom: z.string().min(2, "Le prénom doit contenir au moins 2 caractères").optional(),
-  email: z.string().email("Email invalide").optional(),
-  telephone: z.string().min(9, "Numéro invalide").optional(),
+  id: z.number({ invalid_type_error: "ID invalide" }),
+  prenom: z.string().optional(),
+  nom: z.string().optional(),
   adresse: z.string().optional(),
+  email: z.string().email().optional(),
+  pass: z.string().optional(),
+  telephone: z.string().optional(),
+  role: z.string().optional(),
   specialiteId: z.number().nullable().optional(),
   image: z.string().optional(),
   isActive: z.boolean().optional()

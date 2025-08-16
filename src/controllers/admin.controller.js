@@ -41,6 +41,7 @@ export const getAllUsers = async (c) => {
 export const createUser = async (c) => {
   try {
     const body = await c.req.json();
+    console.log(body);
     const { prenom, nom, adresse, email, pass, telephone, role, specialiteId, image, isActive } =
       createUserSchema.parse(body);
 

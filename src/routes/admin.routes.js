@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import { createUser, getAllAdmins, getAllMedcins, getAllPersonnels, getAllUsers, getUserById, getUserByTel, updateUser } from '../controllers/admin.controller.js'
+import { createUser, getAllAdmins, getAllMedcins, getAllPersonnels, getAllUsers, getUserById, getUserByTel, restoreUser, softDeleteUser, updateUser } from '../controllers/admin.controller.js'
 
 
 export const adminRoutes = new Hono()
@@ -11,3 +11,5 @@ export const adminRoutes = new Hono()
   .get('/recup/:id', getUserById)
   .get('/userByTel/:telephone', getUserByTel)
   .put('/update/:id', updateUser)
+  .patch('/desactiver/:id', softDeleteUser )
+  .patch('/restaurer/:id', restoreUser )

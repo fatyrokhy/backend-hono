@@ -165,6 +165,39 @@ export const updateUser = async (c) => {
   }
 };
 
+// Désactiver User
+export const softDeleteUser = async (c) => {
+  try {
+    const id = parseInt(c.req.param('id'));
+    if (!id) return c.json({ message: 'ID manquant' }, 400);
+
+    const user = await prisma.user.update({
+      where: { id },
+      data: { isActive: false }
+    });
+
+    return c.json({ message: `Utilisateur ${user.nom} supprimé` });
+  } catch (err) {
+    console.error('Erreur soft-delete:', err);
+    return c.json({ message: 'Erreur serveur', error: err.message }, 500);
+  }
+};
+
+//Restaurer user
+export const restoreUser = async (c) => {
+  try {
+    const id = parseInt(c.req.param('id'));
+    const user = await prisma.user.update({
+      where: { id },
+      data: { isActive: true }
+    });
+    return c.json({ message: `Utilisateur ${user.nom} restauré` });
+  } catch (err) {
+    console.error('Erreur restore:', err);
+    return c.json({ message: 'Erreur serveur', error: err.message }, 500);
+  }
+};
+
 // export const updateUser = async (c) => {
 //   try {
 //     const body = await c.req.json();

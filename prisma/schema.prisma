@@ -22,10 +22,12 @@ model User {
   prenom    String
   email     String   @unique
   pass      String
-  telephone String
-  adresse   String
+  telephone String   @unique
+  adresse   String  
   specialiteId Int?
   role      Role
+  image        String     @default("https://example.com/default-profile.jpg")
+  isActive     Boolean    @default(true)
 
   // Relations
   specialite Specialite? @relation(fields: [specialiteId], references: [id])

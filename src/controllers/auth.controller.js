@@ -43,7 +43,7 @@ export const login = async (c) => {
       return c.json({ message: 'Invalid credentials' }, 401);
     }
   const token = signToken({ userId: user.id })
-  return c.json({ token },200)
+  return c.json({ token ,role: user.role },200)
 
 }  catch (err) {
     console.error('Login error:', err);

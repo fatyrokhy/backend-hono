@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt'
 import { prisma } from '../config/db.js'
-import { createMedecinSchema, medecinArraySchema } from '../schemas/medecin.schema.js'
+import { createMedecinSchema } from '../schemas/medecin.schema.js'
 
 
 // inscription medecin 
@@ -23,20 +23,3 @@ export const createMedecin = async (c) => {
         return c.json({ message: 'Erreur serveur', error: err.message }, 500)
     }
 }
-// liste medecin
-export const getAllMedecins = async (c) => {
-  try {
-    const medecin = await prisma.user.findMany({
-      where: { role: "medecin" },
-      orderBy: { id: 'asc' },
-    });
-
-    // Validation de la sortie
-  const   result = medecinArraySchema.parse(medecin);
-
-    return c.json(result);
-  } catch (err) {
-    console.error('Erreur récupération medecin :', err)
-    return c.json({ message: 'Erreur serveur' }, 500);
-  }
-};

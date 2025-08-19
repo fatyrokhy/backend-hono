@@ -48,9 +48,13 @@ model Patient {
   id        Int       @id @default(autoincrement())
   nom       String
   prenom    String
+  sexe        Sexe
+  dateNaissance DateTime
   adresse   String
   telephone String
-  email     String
+  email     String  @unique
+  isActive    Boolean   @default(true)
+  dateCreation DateTime @default(now())
 
   rvs           Rv[]
   prescriptions Prescription[]
@@ -143,3 +147,9 @@ enum Role {
   medecin
   personnel
 }
+
+enum Sexe {
+  homme
+  femme
+}
+

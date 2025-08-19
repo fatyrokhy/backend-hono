@@ -6,7 +6,7 @@ import { createUserSchema, updateUserSchema, userArraySchema } from '../schemas/
 export const getAllUsers = async (c) => {
   try {
     const admin = await prisma.user.findMany({
-      orderBy: { id: 'asc' },
+      orderBy: { id: 'desc' },
     });
     const result = userArraySchema.parse(admin);
     console.log(result);
@@ -115,26 +115,36 @@ export const getUserById = async (c) => {
 // Récupération d'un utilisateur par tel
 export const getUserByTel = async (c) => {
   try {
-    const tel = c.req.param('telephone'); // récupère :telephone de l’URL
-    console.log(tel);
-    const user = await prisma.user.findMany({
-  where: {
-    telephone: {
-      startsWith: tel
-    }
-  }
+    const tel = c.req.query('telephone'); // récupère :telephone de l’URL
+    const statut = c.req.query('statut'); 
+
+    const isActiveFilter = statut === 'true';
+
+
+    console.log('telephone:', tel, 'isActive:', isActiveFilter);
+
+    const users = await prisma.user.findMany({
+      where: {
+        telephone: {
+          startsWith: tel
+        },
+        isActive: isActiveFilter
+      }
     });
-    console.log(user);
-    if (!user) {
+
+    console.log(users);
+
+    if (!users || users.length === 0) {
       return c.json({ message: 'Utilisateur non trouvé' }, 404);
     }
 
-    return c.json(user);
+    return c.json(users);
   } catch (error) {
     console.error(error);
     return c.json({ message: 'Erreur lors de la récupération de l’utilisateur' }, 500);
   }
 };
+
 
 export const updateUser = async (c) => {
   try {

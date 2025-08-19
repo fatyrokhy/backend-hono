@@ -42,8 +42,8 @@ export const login = async (c) => {
     if (!passwordMatch) {
       return c.json({ message: 'Invalid credentials' }, 401);
     }
-  const token = signToken({ userId: user.id })
-  return c.json({ token ,role: user.role },200)
+  const token = signToken({ userId: user.id ,prenom: user.prenom, nom: user.nom ,role: user.role, image: user.image   })
+  return c.json({ token},200)
 
 }  catch (err) {
     console.error('Login error:', err);

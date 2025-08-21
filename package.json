@@ -4,11 +4,12 @@
   "description": "",
   "main": "index.js",
   "type": "module",
-  "scripts": {
-    "dev": "nodemon src/index.js",
-    "start": "node src/index.js",
-    "prisma": "prisma"
-  },
+"scripts": {
+  "dev": "nodemon src/index.js",
+  "build": "npm install --production && npx prisma generate && npx prisma migrate deploy",
+  "start": "node src/index.js",
+  "prisma": "prisma"
+},
    "keywords": [],
   "author": "",
   "license": "ISC",

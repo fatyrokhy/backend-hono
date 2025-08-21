@@ -1,0 +1,301 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "API Gestion Médicale",
+    "description": "Documentation de l’API basée sur Prisma (User, Patient, RV, etc.)",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Serveur local"
+    }
+  ],
+  "paths": {
+    "/admin/listeUser": {
+      "get": {
+        "summary": "Lister tous les utilisateurs",
+        "tags": ["User"],
+        "responses": {
+          "200": {
+            "description": "Liste des utilisateurs",
+            "content": {
+              "application/json": {
+                "example": [
+                  {
+                    "id": 11,
+                    "prenom": "test",
+                    "nom": "js",
+                    "adresse": "Parcelles",
+                    "email": "testjs@gmail.com",
+                    "telephone": "777007050",
+                    "role": "medecin",
+                    "specialiteId": 1,
+                    "image": "https://res.cloudinary.com/dwnujxhia/image/upload/v1755604940/image/dh5loufbcbnx9q06zgci.jpg",
+                    "isActive": true
+                  }
+                ],
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/User" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/listeAdmin": {
+      "get": {
+        "summary": "Lister tous les administrateurs",
+        "tags": ["User"],
+        "responses": {
+          "200": {
+            "description": "Liste des administrateurs",
+            "content": {
+              "application/json": {
+                "example": [
+                  {
+                    "id": 11,
+                    "prenom": "test",
+                    "nom": "js",
+                    "adresse": "Parcelles",
+                    "email": "testjs@gmail.com",
+                    "telephone": "777007050",
+                    "role": "admin",
+                    "specialiteId": null,
+                    "image": "https://res.cloudinary.com/dwnujxhia/image/upload/v1755604940/image/dh5loufbcbnx9q06zgci.jpg",
+                    "isActive": true
+                  }
+                ],
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/User" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/listePersonnel": {
+      "get": {
+        "summary": "Lister tous les personnels",
+        "tags": ["User"],
+        "responses": {
+          "200": {
+            "description": "Liste des personnels ",
+            "content": {
+              "application/json": {
+                "example": [
+                  {
+                    "id": 11,
+                    "prenom": "test",
+                    "nom": "js",
+                    "adresse": "Parcelles",
+                    "email": "testjs@gmail.com",
+                    "telephone": "777007050",
+                    "role": "personnel",
+                    "specialiteId": null,
+                    "image": "https://res.cloudinary.com/dwnujxhia/image/upload/v1755604940/image/dh5loufbcbnx9q06zgci.jpg",
+                    "isActive": true
+                  }
+                ],
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/User" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/listeMedcin": {
+      "get": {
+        "summary": "Lister tous les medcins",
+        "tags": ["User"],
+        "responses": {
+          "200": {
+            "description": "Liste des medcins",
+            "content": {
+              "application/json": {
+                "example": [
+                  {
+                    "id": 11,
+                    "prenom": "test",
+                    "nom": "js",
+                    "adresse": "Parcelles",
+                    "email": "testjs@gmail.com",
+                    "telephone": "777007050",
+                    "role": "admin",
+                    "specialiteId": 3,
+                    "image": "https://res.cloudinary.com/dwnujxhia/image/upload/v1755604940/image/dh5loufbcbnx9q06zgci.jpg",
+                    "isActive": true
+                  }
+                ],
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/User" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+"/admin/create": {
+  "post": {
+    "summary": "Création de User",
+    "tags": ["User"],
+    "requestBody": {
+      "required": true,
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "properties": {
+              "prenom": { "type": "string" },
+              "nom": { "type": "string" },
+              "adresse": { "type": "string" },
+              "email": { "type": "string" },
+              "pass": { "type": "string" },
+              "telephone": { "type": "string" },
+              "specialiteId": { "type": "integer", "nullable": true },
+              "image": { "type": "string" },
+              "role": { "type": "string", "enum": ["admin","medecin","personnel"] }
+            },
+            "required": ["prenom","nom","email","pass","telephone","role"]
+          },
+          "example": {
+            "prenom": "Mamad",
+            "nom": "Biteye",
+            "adresse": "LIB 04",
+            "email": "mamadbiteye@gmail.com",
+            "pass": "pass123",
+            "telephone": "775002025",
+            "specialiteId": null,
+            "image": "imgsdfg",
+            "role": "admin"
+          }
+        }
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Utilisateur créé avec succès",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": { "type": "integer" },
+                "email": { "type": "string" }
+              }
+            },
+            "example": {
+              "id": 17,
+              "email": "mamadouba@gmail.com"
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Requête invalide"
+      }
+    }
+  }
+},
+"/auth/login": {
+  "post": {
+    "summary": "Connexion utilisateur",
+    "tags": ["Auth"],
+    "requestBody": {
+      "required": true,
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "properties": {
+              "email": { "type": "string" },
+              "pass": { "type": "string" }
+            },
+            "required": ["email", "pass"]
+          },
+          "example": {
+            "email": "ba@gmail.com",
+            "pass": "pass123"
+          }
+        }
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Connexion réussie, retourne un token JWT",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "token": { "type": "string" }
+              }
+            },
+            "example": {
+              "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInByZW5vbSI6ImZhdG1hIiwibm9tIjoiYmEiLCJyb2xlIjoibWVkZWNpbiIsImltYWdlIjoiaHR0cHM6Ly9leGFtcGxlLmNvbS9kZWZhdWx0LXByb2ZpbGUuanBnIiwiaWF0IjoxNzU1NzQxMzA0LCJleHAiOjE3NTU4Mjc3MDR9.Nc_1qhlQfQxuE5h1CjotDqAP0vutG5-0ElIC9LA3O3s"
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Requête invalide"
+      },
+      "401": {
+        "description": "Authentification échouée (email ou mot de passe incorrect)"
+      }
+    }
+  }
+}
+  },
+    "components": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "example": 1 },
+          "nom": { "type": "string", "example": "Niass" },
+          "prenom": { "type": "string", "example": "Rokhy" },
+          "email": { "type": "string", "example": "rokhy@example.com" },
+          "telephone": { "type": "string", "example": "+221770000000" },
+          "adresse": { "type": "string", "example": "Dakar" },
+          "role": { "$ref": "#/components/schemas/Role" },
+          "isActive": { "type": "boolean", "default": true }
+        },
+        "required": ["nom", "prenom", "email", "telephone", "role"]
+      },
+      "Patient": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "example": 1 },
+          "nom": { "type": "string", "example": "Fall" },
+          "prenom": { "type": "string", "example": "Amina" },
+          "sexe": { "$ref": "#/components/schemas/Sexe" },
+          "dateNaissance": { "type": "string", "format": "date-time" },
+          "adresse": { "type": "string" },
+          "telephone": { "type": "string" },
+          "email": { "type": "string" },
+          "isActive": { "type": "boolean" },
+          "dateCreation": { "type": "string", "format": "date-time" }
+        },
+        "required": ["nom", "prenom", "sexe", "dateNaissance", "telephone", "email"]
+      },
+      "Role": {
+        "type": "string",
+        "enum": ["admin", "medecin", "personnel"]
+      },
+      "Sexe": {
+        "type": "string",
+        "enum": ["homme", "femme"]
+      }
+    }
+  }
+}

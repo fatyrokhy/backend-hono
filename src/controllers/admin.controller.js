@@ -145,6 +145,36 @@ export const getUserByTel = async (c) => {
   }
 };
 
+export const getUserByRole = async (c) => {
+  try {
+    const role = c.req.query('role'); 
+    const statut = c.req.query('statut'); 
+
+    // Vérification du rôle
+    const validRoles = ["admin", "personnel", "medecin"];
+    if (!role || !validRoles.includes(role)) {
+      return c.json({ message: "Rôle invalide ou manquant" }, 400);
+    }
+
+    // Construction dynamique des filtres
+    const filters = { role: role };
+    if (statut !== undefined) {
+      filters.isActive = (statut === 'true');
+    }
+
+    const users = await prisma.user.findMany({ where: filters });
+
+    if (!users || users.length === 0) {
+      return c.json({ message: 'Utilisateur non trouvé' }, 404);
+    }
+
+    return c.json(users, 200);
+
+  } catch (error) {
+    console.error(error);
+    return c.json({ message: 'Erreur lors de la récupération de l’utilisateur' }, 500);
+  }
+};
 
 export const updateUser = async (c) => {
   try {

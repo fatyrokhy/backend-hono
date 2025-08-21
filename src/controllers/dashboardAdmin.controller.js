@@ -115,6 +115,29 @@ export const statsPatients = async (c) => {
   });
 };
 
+// export const statsPatients = async (c) => {
+//   try {
+//     const patients = await prisma.patient.groupBy({
+//       by: ['sexe'],
+//       _count: { sexe: true },
+//     });
+
+//     // Transformer en {hommes: X, femmes: Y}
+//     const stats = patients.reduce(
+//       (acc, p) => {
+//         if (p.sexe.toLowerCase() === "homme") acc.hommes = p._count.sexe;
+//         if (p.sexe.toLowerCase() === "femme") acc.femmes = p._count.sexe;
+//         return acc;
+//       },
+//       { hommes: 0, femmes: 0 }
+//     );
+
+//     return c.json(stats);
+//   } catch (error) {
+//     return c.json({ error: error.message }, 500);
+//   }
+// };
+
 /* -------------------- Rendez-vous -------------------- */
 export const statsRendezVous = async () => {
   const rvs = await prisma.rv.findMany({ select: { statut: true } });

@@ -24,11 +24,9 @@ export const register = async (c) => {
 export const login = async (c) => {
   try{
 
-  
   const body = await c.req.json()
   
   const { email, pass } = loginSchema.parse(body)   // ← corrigé
-  
   
   const user = await prisma.user.findUnique({ where: { email } })
   
@@ -42,6 +40,11 @@ export const login = async (c) => {
     if (!passwordMatch) {
       return c.json({ message: 'Invalid credentials' }, 401);
     }
+
+  if (!user.isActive) {
+  return c.json({ message: 'Votre compte est inactif. Contactez un administrateur.' }, 403);
+  }
+
   const token = signToken({ userId: user.id ,prenom: user.prenom, nom: user.nom ,role: user.role, image: user.image   })
   return c.json({ token},200)
 
